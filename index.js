@@ -1,5 +1,6 @@
 const express = require('express')
 var morgan = require("morgan")
+const cors = require("cors")
 const app = express()
 
 let persons = [
@@ -32,7 +33,7 @@ morgan.token("body", (req, res) => {
 })
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-
+app.use(cors())
 
 app.get("/api/persons", (request, response) => {
   response.json(persons)
@@ -50,6 +51,7 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = request.params.id
+  console.log(typeof(id))
   persons = persons.filter(person => person.id !== id)
 
   response.status(204).end()
@@ -70,7 +72,7 @@ app.post("/api/persons", (request, response) => {
   } else if (check_if_exists()) {
     response.status(400).send("Person is already on the phonebook!")
   } else {
-    const randomid = Math.floor(Math.random() * 1000000000)
+    const randomid = String(Math.floor(Math.random() * 1000000000))
     person_to_add.id = randomid
     persons = persons.concat(person_to_add)
     response.send(person_to_add)
@@ -85,7 +87,7 @@ app.get("/info", (request, response) => {
 })
 
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
