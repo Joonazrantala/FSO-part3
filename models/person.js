@@ -1,7 +1,7 @@
-const mongoose = require("mongoose")
+const mongoose = require('mongoose')
 
 const url = process.env.MONGODB_URI
-mongoose.set("strictQuery", false)
+mongoose.set('strictQuery', false)
 console.log('connecting to', url)
 
 mongoose.connect(url)
@@ -13,29 +13,29 @@ mongoose.connect(url)
   })
 
 const personSchema = new mongoose.Schema({
-    id: String,
-    name: {
-      type: String,
-      minLength: 3,
-      required: true
-    },
-    number: {
-      type: String,
-      validate: {
-        validator: (v) => {
-          return /^\d{2,3}-\d{6,}$/.test(v)
-        },
-        message: props => `${props.value} is not a valid phone number!`
-      }
+  id: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    validate: {
+      validator: (v) => {
+        return /^\d{2,3}-\d{6,}$/.test(v)
+      },
+      message: props => `${props.value} is not a valid phone number!`
     }
+  }
 })
 
 personSchema.set('toJSON', {
-    transform: (document, returnedObject) => {
-      returnedObject.id = returnedObject._id.toString()
-      delete returnedObject._id
-      delete returnedObject.__v
-    }
-  })
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
+  }
+})
 
-module.exports = mongoose.model("Person", personSchema)
+module.exports = mongoose.model('Person', personSchema)

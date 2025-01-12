@@ -1,12 +1,12 @@
 const express = require('express')
-var morgan = require("morgan")
-const cors = require("cors")
-require("dotenv").config()
-const Person = require("./models/person.js")
+var morgan = require('morgan')
+const cors = require('cors')
+require('dotenv').config()
+const Person = require('./models/person.js')
 const app = express()
 
-morgan.token("body", (req, res) => {
-  if (req.method === "POST") {
+morgan.token('body', (req, res) => {
+  if (req.method === 'POST') {
     return JSON.stringify(req.body)
   }
 })
@@ -19,30 +19,30 @@ const errorHandler = (error, req, res, next) => {
   console.error(`error message: ${error.message}`)
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === "ValidationError") {
+  } else if (error.name === 'ValidationError') {
     return res.status(400).json({ error: error.message })
   }
   next(error)
 }
 
-app.get("/api/persons", (request, response) => {
+app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
     response.json(persons)
   })
 })
 
-app.get("/api/persons/:id", (request, response, next) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).end()
-    }
-  }).catch(error => next(error))
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    }).catch(error => next(error))
 })
 
-app.delete("/api/persons/:id", (request, response, next) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then(person => {
       if (person) {
@@ -54,7 +54,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post("/api/persons", (request, response, next) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
   const newPerson = new Person({
     name: body.name,
@@ -66,23 +66,23 @@ app.post("/api/persons", (request, response, next) => {
       response.send(savedPerson)
     })
     .catch(error => next(error))
-}) 
+})
 
-app.put("/api/persons/:id", (req, res, next) => {
+app.put('/api/persons/:id', (req, res, next) => {
   const newperson = ({
     name: req.body.name,
     number: req.body.number
   })
-  Person.findByIdAndUpdate(req.params.id, newperson, {new:true})
+  Person.findByIdAndUpdate(req.params.id, newperson, { new:true })
     .then(promise => {
       res.send(promise)
     })
-    .catch(next => next(error))
+    .catch(error => next(error))
 })
 
-app.get("/info", (request, response) => {
+app.get('/info', (request, response) => {
   Person.countDocuments({}).then(count => {
-  response.send(`
+    response.send(`
     <p style="font-size: 20px">Phonebook has info of ${count} people</p>
     <p style="font-size: 20px">${Date()}</p>`)
   })
